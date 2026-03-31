@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>GRH IA Event</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0a1f44, #1e3c72);
+}
+
+/* Carte */
+.container {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  padding: 30px;
+  border-radius: 20px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  color: white;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 14px;
+  margin-bottom: 5px;
+  opacity: 0.8;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+input::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+/* Boutons */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.generate {
+  background: #4facfe;
+  color: white;
+}
+
+.generate:hover {
+  background: #00c6ff;
+}
+
+.download {
+  background: white;
+  color: #0a1f44;
+}
+
+.download:hover {
+  background: #ddd;
+}
+
+.whatsapp {
+  background: #25D366;
+  color: white;
+}
+
+.whatsapp:hover {
+  background: #1ebe5d;
+}
+
+/* Canvas */
+canvas {
+  margin-top: 20px;
+  border-radius: 15px;
+  width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>LA GRH à l’ère de l’IA</h2>
+  <p class="subtitle">21 avril • Université Kofi Annan</p>
+  <p class="subtitle">Salle Malick Condé</p>
+
+  <input type="text" id="name" placeholder="Ton nom">
+  <input type="file" id="photo">
+
+  <button class="generate" onclick="generate()">Je serai présent</button>
+  <button class="download" onclick="download()">Télécharger</button>
+  
+
+  <canvas id="canvas" width="600" height="750"></canvas>
+</div>
+
+<script>
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+function generate() {
+  const name = document.getElementById("name").value;
+  const file = document.getElementById("photo").files[0];
+
+  if (!name || !file) {
+    alert("Remplis ton nom et ajoute une photo !");
+    return;
+  }
+
+  // Fond dégradé
+  let gradient = ctx.createLinearGradient(0, 0, 0, 750);
+  gradient.addColorStop(0, "#0a1f44");
+  gradient.addColorStop(1, "#1e3c72");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 600, 750);
+
+  // Logo
+  const logo = new Image();
+  logo.src = "logo.jpeg";
+
+  logo.onload = () => {
+    ctx.drawImage(logo, 150, 40, 300, 100);
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const userImg = new Image();
+      userImg.src = e.target.result;
+
+      userImg.onload = () => {
+
+        // Cercle + ombre
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(300, 300, 110, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 30;
+
+        ctx.drawImage(userImg, 190, 190, 220, 220);
+        ctx.restore();
+
+        // Nom
+        ctx.fillStyle = "white";
+        ctx.font = "bold 30px Poppins";
+        ctx.textAlign = "center";
+        ctx.fillText(name, 300, 470);
+
+        // Texte
+        ctx.font = "18px Poppins";
+        ctx.fillText("Je serai présent à", 300, 520);
+
+        ctx.font = "bold 20px Poppins";
+        ctx.fillText("LA GRH à l’ère de l’IA", 300, 550);
+
+        ctx.font = "16px Poppins";
+        ctx.fillText("21 avril", 300, 590);
+        ctx.fillText("Université Kofi Annan", 300, 620);
+        ctx.fillText("Salle Malick Condé", 300, 650);
+      }
+    }
+    reader.readAsDataURL(file);
+  }
+}
+
+// Télécharger
+function download() {
+  const link = document.createElement('a');
+  link.download = 'affiche-grh.jpeg';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+// WhatsApp
+function shareWhatsApp() {
+  const message = encodeURIComponent(
+    "Je serai présent à la conférence LA GRH à l’ère de l’IA 🚀\n📅 21 avril\n📍 Université Kofi Annan\n🏛️ Salle Malick Condé\n\nRejoins-nous !"
+  );
+
+  const url = "https://wa.me/?text=" + message;
+  window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
